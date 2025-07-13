@@ -4,8 +4,7 @@ namespace WaveRecorder;
 
 public partial class MainWindow : Window
 {
-	System.Timers.Timer SystemTimer = new() { Interval = 10 };
-	private readonly System.Windows.Threading.DispatcherTimer DispatcherTimer = new() { Interval = TimeSpan.FromMilliseconds(10) };
+	MicReader micReader = new();
 
 	private readonly List<double> Xs = [];
 	private readonly List<double> Ys = [];
@@ -13,46 +12,31 @@ public partial class MainWindow : Window
 	{
 		InitializeComponent();
 
-		// pre-populate lists with valid data
-		ChangeDataLength();
-
 		// add the scatter plot
 		micPlot.Plot.Add.ScatterLine(Xs, Ys);
 
-		SystemTimer.Elapsed += (s, e) =>
-		{
-			// Changing data length will throw an exception if it occurs mid-render.
-			// Operations performed while the sync object will occur outside renders.
-			lock (micPlot.Plot.Sync)
-			{
-				ChangeDataLength();
-			}
-			micPlot.Refresh();
-		};
+		// Y축 스케일을 -1 ~ 1로 고정
+		micPlot.Plot.Axes.SetLimitsY(-0.5, 0.5);
 
-		DispatcherTimer.Tick += (s, e) =>
-		{
-			// Locking the sync object does not seem to be required
-			// when data is changed using the dispatcher timer in WPF apps
-			ChangeDataLength();
-			micPlot.Refresh();
-		};
-
+		micReader.DataReceived += MicReader_DataReceived;
 	}
 
-
-	private void ChangeDataLength(int minLength = 10_000, int maxLength = 20_000)
+	private void MicReader_DataReceived(double[] obj)
 	{
-		int newLength = Random.Shared.Next(minLength, maxLength);
 		Xs.Clear();
 		Ys.Clear();
-		Xs.AddRange(Generate.Consecutive(newLength));
-		Ys.AddRange(Generate.RandomWalk(newLength));
-		micPlot.Plot.Axes.AutoScale(true);
+		Xs.AddRange(Enumerable.Range(0, obj.Length).Select(x => (double)x).ToArray());
+		Ys.AddRange(obj);
+
+		// X축만 자동 스케일, Y축은 고정
+		micPlot.Plot.Axes.SetLimitsY(-0.5, 0.5);
+		micPlot.Plot.Axes.SetLimitsX(0, obj.Length - 1);
+
+		micPlot.Refresh();
 	}
 
 	private void micPlot_Loaded(object sender, RoutedEventArgs e)
 	{
-		DispatcherTimer.Start();
+		micReader.Start();
 	}
 }
