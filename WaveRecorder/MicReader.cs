@@ -1,7 +1,7 @@
 ﻿using NAudio.Wave;
 
 namespace WaveRecorder;
-public class MicReader
+public class MicReader : IDisposable
 {
 	private readonly WaveInEvent waveIn = new();
 	public event Action<double[]>? DataReceived;
@@ -9,13 +9,9 @@ public class MicReader
 
 	public MicReader()
 	{
-		// WaveInEvent 초기화
 		waveIn.WaveFormat = new WaveFormat(44100, 16, 1); // 44.1kHz, 16bit, mono
-		waveIn.BufferMilliseconds = 10; // 10ms 버퍼
-	}
+		waveIn.BufferMilliseconds = 10;
 
-	public void Start()
-	{
 		waveIn.DataAvailable += (s, e) =>
 		{
 			var buffer = new double[e.BytesRecorded / 2];
@@ -27,12 +23,16 @@ public class MicReader
 			DataReceived?.Invoke(buffer);
 		};
 
-		waveIn.StartRecording();
+		this.Start();
 	}
+
+	public void Start() => waveIn?.StartRecording();
 
 	public void Stop()
 	{
 		waveIn?.StopRecording();
 		waveIn?.Dispose();
 	}
+
+	public void Dispose() => Stop();
 }

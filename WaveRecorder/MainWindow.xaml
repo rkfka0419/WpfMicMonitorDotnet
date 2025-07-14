@@ -8,7 +8,7 @@
         mc:Ignorable="d"  
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <wpf:WpfPlot x:Name="micPlot" Loaded="micPlot_Loaded">
+        <wpf:WpfPlot x:Name="micPlot">
         </wpf:WpfPlot>
     </Grid>
 </Window>
