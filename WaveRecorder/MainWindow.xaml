@@ -6,10 +6,15 @@
         xmlns:wpf="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
         xmlns:local="clr-namespace:WaveRecorder"  
         mc:Ignorable="d"  
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="700" Width="800">
     <Grid>
-        <wpf:WpfPlot x:Name="micPlot">
-        </wpf:WpfPlot>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        
+        <wpf:WpfPlot Grid.Row="0" x:Name="micPlot"/>
+        <wpf:WpfPlot Grid.Row="1" x:Name="fftPlot"/>
     </Grid>
 </Window>
 

@@ -9,8 +9,8 @@ public class MicReader : IDisposable
 
 	public MicReader()
 	{
-		waveIn.WaveFormat = new WaveFormat(44100, 16, 1); // 44.1kHz, 16bit, mono
-		waveIn.BufferMilliseconds = 10;
+		waveIn.WaveFormat = new WaveFormat(65536, 16, 1); // 44.1kHz, 16bit, mono
+		waveIn.BufferMilliseconds = 125;
 
 		waveIn.DataAvailable += (s, e) =>
 		{
