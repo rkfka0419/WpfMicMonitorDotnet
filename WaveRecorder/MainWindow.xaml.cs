@@ -19,18 +19,18 @@ public partial class MainWindow : Window
 
 		fftPlot.Plot.Add.ScatterLine(fftXs, fftYs).LineWidth = 3;
 		fftPlot.Plot.Axes.SetLimitsY(0, 1);
-		micReader.DataReceived += MicReader_DataReceived;
+		micReader.WaveChunkReceived += WaveChunk_Received;
 	}
 
-	private void MicReader_DataReceived(double[] micData)
+	private void WaveChunk_Received(double[] waveChunk)
 	{
 		rawXs.Clear();
 		rawYs.Clear();
-		rawXs.AddRange(Enumerable.Range(0, micData.Length).Select(x => (double)x).ToArray());
-		rawYs.AddRange(micData);
+		rawXs.AddRange(Enumerable.Range(0, waveChunk.Length).Select(x => (double)x).ToArray());
+		rawYs.AddRange(waveChunk);
 		micPlot.Refresh();
 
-		var doubleSidedSpectrum = MathUtil.FFT(micData);
+		var doubleSidedSpectrum = MathUtil.FFT(waveChunk);
 		fftXs.Clear();
 		fftYs.Clear();
 		fftXs.AddRange(Enumerable.Range(0, doubleSidedSpectrum.Length).Select(x => (double)x).ToArray());
