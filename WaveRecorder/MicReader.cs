@@ -1,11 +1,9 @@
 ﻿using NAudio.Wave;
-using System.Collections.Concurrent;
 using System.Threading.Channels;
 
 namespace WaveRecorder;
 public class MicReader : IDisposable
 {
-	const int ChunkSize = 256;
 	Channel<double> waveQueue = Channel.CreateUnbounded<double>(new UnboundedChannelOptions
 	{
 		SingleReader = true,
@@ -34,29 +32,26 @@ public class MicReader : IDisposable
 			}
 		};
 
-
-
-
-		_ = Task.Run(() => ReadLoopAsync(cts.Token));
-
 		this.Start();
+		_ = Task.Run(() => ReadLoopAsync(cts.Token));
 	}
 
 	private async Task ReadLoopAsync(CancellationToken cts)
 	{
-		var chunk = new List<double>(ChunkSize);
+		var chunk = new List<double>(Consts.ChunkSize);
 
 		try
 		{
 			await foreach (var sample in waveQueue.Reader.ReadAllAsync(cts))
 			{
 				chunk.Add(sample);
-				if (chunk.Count >= ChunkSize)
+				if (chunk.Count >= Consts.ChunkSize)
 				{
 					WaveChunkReceived?.Invoke(chunk.ToArray());
 					chunk.Clear();
 				}
 			}
+			System.Diagnostics.Debug.WriteLine("MicReader: ReadLoopAsync completed.");
 		}
 		catch (OperationCanceledException)
 		{
