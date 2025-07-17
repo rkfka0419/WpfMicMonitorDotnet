@@ -2,7 +2,14 @@
 using System.Threading.Channels;
 
 namespace WaveRecorder;
-public class MicReader : IDisposable
+
+public interface IWaveReceiver
+{
+	public event Action<double[]>? WaveChunkReceived;
+}
+
+
+public class MicReader : IDisposable, IWaveReceiver
 {
 	Channel<double> waveQueue = Channel.CreateUnbounded<double>(new UnboundedChannelOptions
 	{
@@ -18,7 +25,7 @@ public class MicReader : IDisposable
 	public MicReader()
 	{		
 		cts = new CancellationTokenSource();
-		waveIn.WaveFormat = new WaveFormat(44100, 16, 1); // 44.1kHz, 16bit, mono
+		waveIn.WaveFormat = new WaveFormat(Consts.SampleRate, 16, 1); // 44.1kHz, 16bit, mono
 		waveIn.BufferMilliseconds = 100;
 
 		waveIn.DataAvailable += (s, e) =>

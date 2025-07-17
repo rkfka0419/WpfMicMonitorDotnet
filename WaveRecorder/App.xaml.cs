@@ -11,7 +11,7 @@ public partial class App : Application
 	{
 		var services = new ServiceCollection();
 
-		services.AddSingleton<MicReader>();
+		services.AddSingleton<IWaveReceiver, MicReader>();
 		services.AddTransient<MainWindow>();
 
 		Services = services.BuildServiceProvider();

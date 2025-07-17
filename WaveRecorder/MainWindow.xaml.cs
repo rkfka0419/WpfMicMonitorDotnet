@@ -9,7 +9,7 @@ public partial class MainWindow : Window
 	private readonly List<double> fftXs = [];
 	private readonly List<double> fftYs = [];
 
-	public MainWindow(MicReader micReader)
+	public MainWindow(IWaveReceiver waveReceiver)
 	{
 
 		InitializeComponent();
@@ -21,7 +21,7 @@ public partial class MainWindow : Window
 		fftPlot.Plot.Add.ScatterLine(fftXs, fftYs).LineWidth = 3;
 		fftPlot.Plot.Axes.SetLimitsY(0, 1);
 		fftPlot.Plot.Axes.SetLimitsX(-Consts.WaveLength / 2, Consts.WaveLength / 2); // FFT x축 범위 명시
-		micReader.WaveChunkReceived += WaveChunk_Received;
+		waveReceiver.WaveChunkReceived += WaveChunk_Received;
 	}
 
 	Queue<double> waveOverlap = new(Consts.WaveLength);
