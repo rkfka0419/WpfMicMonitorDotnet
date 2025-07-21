@@ -11,7 +11,7 @@ public interface IWaveReceiver
 
 public class MicReader : IDisposable, IWaveReceiver
 {
-	Channel<double> waveQueue = Channel.CreateUnbounded<double>(new UnboundedChannelOptions
+	Channel<double[]> waveQueue = Channel.CreateUnbounded<double[]>(new UnboundedChannelOptions
 	{
 		SingleReader = true,
 		SingleWriter = true
@@ -34,9 +34,9 @@ public class MicReader : IDisposable, IWaveReceiver
 			for (int i = 0; i < e.BytesRecorded; i += 2)
 			{
 				short sample = (short)((e.Buffer[i + 1] << 8) | e.Buffer[i]);
-				var value = buffer[i / 2] = (sample / 32768.0) * Amplipication;
-				waveQueue.Writer.TryWrite(value);
+				buffer[i / 2] = (sample / 32768.0) * Amplipication;
 			}
+			waveQueue.Writer.TryWrite(buffer);
 		};
 
 		this.Start();
@@ -51,7 +51,7 @@ public class MicReader : IDisposable, IWaveReceiver
 		{
 			await foreach (var sample in waveQueue.Reader.ReadAllAsync(cts))
 			{
-				chunk.Add(sample);
+				chunk.AddRange(sample);
 				if (chunk.Count >= Consts.ChunkSize)
 				{
 					WaveChunkReceived?.Invoke(chunk.ToArray());

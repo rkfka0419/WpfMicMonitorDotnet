@@ -27,26 +27,29 @@ public partial class MainWindow : Window
 	Queue<double> waveOverlap = new(Consts.WaveLength);
 	private void WaveChunk_Received(double[] waveChunk)
 	{
-		Dispatcher.Invoke(() =>
-		{
-			waveOverlap.Enqueue(waveChunk, Consts.WaveLength);
+		Dispatcher.BeginInvoke(() => { UpdatePlot(waveChunk); });
+	}
 
-			var waveOverlapArray = waveOverlap.ToArray();
-			if(waveOverlapArray.Length < Consts.WaveLength)
-				return;
+	private bool UpdatePlot(double[] waveChunk)
+	{
+		waveOverlap.Enqueue(waveChunk, Consts.WaveLength);
 
-			rawXs.Clear();
-			rawYs.Clear();
-			rawXs.AddRange(Enumerable.Range(0, Consts.WaveLength).Select(x => (double)x).ToArray());
-			rawYs.AddRange(waveOverlapArray);
-			micPlot.Refresh();
+		var waveOverlapArray = waveOverlap.ToArray();
+		if (waveOverlapArray.Length < Consts.WaveLength)
+			return false;
 
-			var doubleSidedSpectrum = MathUtil.FFT(waveOverlapArray);
-			fftXs.Clear();
-			fftYs.Clear();
-			fftXs.AddRange(Enumerable.Range(0, Consts.WaveLength).Select(x => (double)(x - Consts.WaveLength / 2)).ToArray());
-			fftYs.AddRange(doubleSidedSpectrum);
-			fftPlot.Refresh();
-		});
+		rawXs.Clear();
+		rawYs.Clear();
+		rawXs.AddRange(Enumerable.Range(0, Consts.WaveLength).Select(x => (double)x).ToArray());
+		rawYs.AddRange(waveOverlapArray);
+		micPlot.Refresh();
+
+		var doubleSidedSpectrum = MathUtil.FFT(waveOverlapArray);
+		fftXs.Clear();
+		fftYs.Clear();
+		fftXs.AddRange(Enumerable.Range(0, Consts.WaveLength).Select(x => (double)(x - Consts.WaveLength / 2)).ToArray());
+		fftYs.AddRange(doubleSidedSpectrum);
+		fftPlot.Refresh();
+		return true;
 	}
 }
