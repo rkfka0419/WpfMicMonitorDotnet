@@ -27,17 +27,17 @@ public partial class MainWindow : Window
 	Queue<double> waveOverlap = new(Consts.WaveLength);
 	private void WaveChunk_Received(double[] waveChunk)
 	{
-		Dispatcher.BeginInvoke(() => { UpdatePlot(waveChunk); });
-	}
-
-	private bool UpdatePlot(double[] waveChunk)
-	{
 		waveOverlap.Enqueue(waveChunk, Consts.WaveLength);
 
 		var waveOverlapArray = waveOverlap.ToArray();
 		if (waveOverlapArray.Length < Consts.WaveLength)
-			return false;
+			return;
 
+		Dispatcher.BeginInvoke(() => { UpdatePlot(waveChunk); });
+	}
+
+	private void UpdatePlot(double[] waveOverlapArray)
+	{
 		rawXs.Clear();
 		rawYs.Clear();
 		rawXs.AddRange(Enumerable.Range(0, Consts.WaveLength).Select(x => (double)x).ToArray());
@@ -50,6 +50,5 @@ public partial class MainWindow : Window
 		fftXs.AddRange(Enumerable.Range(0, Consts.WaveLength).Select(x => (double)(x - Consts.WaveLength / 2)).ToArray());
 		fftYs.AddRange(doubleSidedSpectrum);
 		fftPlot.Refresh();
-		return true;
 	}
 }
