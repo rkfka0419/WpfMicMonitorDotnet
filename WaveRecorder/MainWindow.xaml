@@ -6,15 +6,22 @@
         xmlns:wpf="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
         xmlns:local="clr-namespace:WaveRecorder"  
         mc:Ignorable="d"  
-        Title="MainWindow" Height="700" Width="800">
+        Title="MainWindow" Height="700" Width="800"
+        Background="Black">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="32" 
+                      ResizeBorderThickness="5" 
+                      GlassFrameThickness="0" 
+                      CornerRadius="0" />
+    </WindowChrome.WindowChrome>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition />
         </Grid.RowDefinitions>
         
-        <wpf:WpfPlot Grid.Row="0" x:Name="micPlot"/>
-        <wpf:WpfPlot Grid.Row="1" x:Name="fftPlot"/>
+        <wpf:WpfPlot Grid.Row="0" x:Name="micPlot" />
+        <wpf:WpfPlot Grid.Row="1" x:Name="fftPlot" />
     </Grid>
 </Window>
 

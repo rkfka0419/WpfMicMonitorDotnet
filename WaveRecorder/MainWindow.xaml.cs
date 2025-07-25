@@ -14,13 +14,29 @@ public partial class MainWindow : Window
 
 		InitializeComponent();
 
-		micPlot.Plot.Add.ScatterLine(rawXs, rawYs).LineWidth = 3;
-		micPlot.Plot.Axes.SetLimitsY(-0.5, 0.5);
-		micPlot.Plot.Axes.SetLimitsX(0, Consts.WaveLength); // x축 범위 명시
+		// ScottPlot 색상 설정 (필수)
+		micPlot.Plot.FigureBackground.Color = ScottPlot.Colors.Black;
+		micPlot.Plot.DataBackground.Color = ScottPlot.Colors.Black;
+		micPlot.Plot.Axes.Color(ScottPlot.Colors.White);
 
-		fftPlot.Plot.Add.ScatterLine(fftXs, fftYs).LineWidth = 3;
+		fftPlot.Plot.FigureBackground.Color = ScottPlot.Colors.Black;
+		fftPlot.Plot.DataBackground.Color = ScottPlot.Colors.Black;
+		fftPlot.Plot.Axes.Color(ScottPlot.Colors.White);
+
+		// 형광 초록 라인
+		var micLine = micPlot.Plot.Add.ScatterLine(rawXs, rawYs);
+		micLine.LineWidth = 3;
+		micLine.Color = ScottPlot.Color.FromHex("#00FF41");
+
+		var fftLine = fftPlot.Plot.Add.ScatterLine(fftXs, fftYs);
+		fftLine.LineWidth = 3;
+		fftLine.Color = ScottPlot.Color.FromHex("#00FF41");
+
+		micPlot.Plot.Axes.SetLimitsY(-0.5, 0.5);
+		micPlot.Plot.Axes.SetLimitsX(0, Consts.WaveLength);
 		fftPlot.Plot.Axes.SetLimitsY(0, 1);
-		fftPlot.Plot.Axes.SetLimitsX(-Consts.WaveLength / 2, Consts.WaveLength / 2); // FFT x축 범위 명시
+		fftPlot.Plot.Axes.SetLimitsX(-Consts.WaveLength / 2, Consts.WaveLength / 2);
+
 		waveReceiver.WaveChunkReceived += WaveChunk_Received;
 	}
 

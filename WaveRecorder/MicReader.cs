@@ -25,8 +25,8 @@ public class MicReader : IDisposable, IWaveReceiver
 	public MicReader()
 	{		
 		cts = new CancellationTokenSource();
-		waveIn.WaveFormat = new WaveFormat(Consts.SampleRate, 16, 1); // 44.1kHz, 16bit, mono
-		waveIn.BufferMilliseconds = 100;
+		waveIn.WaveFormat = new WaveFormat(25600, 16, 1); // 44.1kHz, 16bit, mono
+		waveIn.BufferMilliseconds = 40;
 
 		waveIn.DataAvailable += (s, e) =>
 		{
